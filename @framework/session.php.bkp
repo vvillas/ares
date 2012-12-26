@@ -1,0 +1,81 @@
+<?php
+require_once "sistema/database/Session.php";
+/**
+ * Objeto de Operação da Sessão
+ * @author Victor
+ */
+class Session extends SessionDatabase
+{
+	private $in_id;
+	private $bo_logged;
+	
+	public $o_control;
+	public $o_db;
+	
+	function __construct(Control &$o_control)
+	{
+		$this->o_control = &$o_control;
+		$this->o_db = &$this->o_control->o_db;
+
+		if(isset($_COOKIE[SYS_TTL])){
+			$cookie = unserialize($_COOKIE[SYS_TTL]);
+			$this->in_id = $cookie['sess_id'];
+			$this->bo_logged = $cookie['bo_logged'];
+		}
+
+	}
+	
+	public function getId(){
+		return $this->in_id;
+	}
+	
+	public function isLogged(){
+		return $this->bo_logged;
+	}
+	
+		
+	/**
+	 * Metodo que constroi ou re-constroi a sessao
+	 */
+	public function setSession($usr_in_id)
+	{
+		$this->in_id = $this->verifySession($usr_in_id);
+		
+		if(is_numeric($this->in_id)){
+			if($this->updateSession($this->in_id, $this->o_control->o_config->getParam('in_session_time'))){
+				$this->bo_logged = $_SESSION['logged'] = true;
+			}
+		}
+		else
+		{
+			if($this->in_id = $this->insertSession($this->o_control->o_config->getParam('in_session_time'), $usr_in_id)){
+				$_SESSION['ID'] = $this->in_id;
+				$this->bo_logged = $_SESSION['logged'] = true;
+				$_SESSION['USER_ID'] = $usr_in_id;
+			}
+		}
+		
+		if($this->isLogged()){
+			$cookie['sess_id'] = $this->getId();
+			$cookie['bo_logged'] = $this->isLogged();
+			
+			setcookie(SYS_TTL, serialize($cookie));
+			
+			var_dump($_COOKIE[SYS_TTL]);
+		}
+	}
+	
+	
+	/**
+	 * Metodo que encerra a sessão
+	 */
+	public function unsetSession()
+	{
+		
+		if (is_integer($this->in_id)) {
+			$this->updateSession($this->in_id,0);
+		}
+
+		unset($_COOKIE[SYS_TTL]);
+	} 
+}
