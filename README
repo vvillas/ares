@@ -1,0 +1,6 @@
+total 16
+drwxrwxr-x  6 victor victor 4096 Dez 15 17:51 @application
+drwxrwxr-x  2 victor victor 4096 Dez 15 17:53 docs
+drwxrwxr-x 11 victor victor 4096 Dez 15 18:15 @framework
+-rwxrwxrwx  1 victor victor 1589 Dez 15 17:50 index.php
+-rw-r--r--  1 root   root      0 Dez 26 08:56 README
